@@ -3,9 +3,7 @@ const refs = {
     startBtn: document.querySelector('button[data-action="start"'),
     stopBtn: document.querySelector('button[data-action="stop"')
   },
-  randomIntegerFromInterval = max => {
-    return Math.floor(Math.random() * (max + 1));
-  },
+ 
   colors = [
     "#FFFFFF",
     "#2196F3",
@@ -19,20 +17,29 @@ const refs = {
     "#d47553",
     "#3eb9dd"
   ],
-  colorRandom = () => {
-    const _color = colors[randomIntegerFromInterval(colors.length - 1)];
-    console.log(_color);
-    document.body.style.backgroundColor = _color;
+  randomIntegerFromInterval = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1) + min);
   };
 
-let colorClick = undefined;
+const colorRandom =   {
+  isActive: false,
+  start() {
+  if (this.isActive) {
+  return;   
+  }
+  this.isActive = true;
+  this.intervalId = setInterval(() => {
+  const colorRandom = randomIntegerFromInterval(0, colors.length);
+  console.log(colorRandom)
+  document.body.style.backgroundColor = colors[colorRandom]
+  }, 1000);
 
-refs.startBtn.addEventListener(
-  "click",
-  e =>
-    (colorClick = colorClick
-      ? colorClick
-      : setInterval(() => colorRandom(), 1000))
-);
+  },
+  stop() {
+  clearInterval(this.intervalId)
+  this.isActive = false;
+  }
+  };
 
-refs.stopBtn.addEventListener("click", e => clearInterval(colorClick));
+  refs.startBtn.addEventListener('click', colorRandom.start.bind(colorRandom));
+  refs.stopBtn.addEventListener('click', colorRandom.stop.bind(colorRandom));
